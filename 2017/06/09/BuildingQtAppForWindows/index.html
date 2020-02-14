@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-tang.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.1","exturl":false,"sidebar":{"position":"right","Muse | Mist":320,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在Windows下使用VS2015和CMake构建基于 Qt5.9.0静态库的应用程序.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows中使用Qt5.9.0静态库构建应用">
+<meta property="og:url" content="http://yoursite.com/2017/06/09/BuildingQtAppForWindows/index.html">
+<meta property="og:site_name" content="三日">
+<meta property="og:description" content="在Windows下使用VS2015和CMake构建基于 Qt5.9.0静态库的应用程序.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-06-09T15:25:40.000Z">
+<meta property="article:modified_time" content="2017-06-11T09:01:00.000Z">
+<meta property="article:author" content="sanri">
+<meta property="article:tag" content="Qt">
+<meta property="article:tag" content="GUI">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2017/06/09/BuildingQtAppForWindows/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Windows中使用Qt5.9.0静态库构建应用 | 三日</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">三日</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right"></div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/09/BuildingQtAppForWindows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tang.jpeg">
+      <meta itemprop="name" content="sanri">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="三日">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Windows中使用Qt5.9.0静态库构建应用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-06-09 23:25:40" itemprop="dateCreated datePublished" datetime="2017-06-09T23:25:40+08:00">2017-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-06-11 17:01:00" itemprop="dateModified" datetime="2017-06-11T17:01:00+08:00">2017-06-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/libs/" itemprop="url" rel="index">
+                    <span itemprop="name">libs</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/libs/Qt/" itemprop="url" rel="index">
+                    <span itemprop="name">Qt</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在Windows下使用VS2015和CMake构建基于 Qt5.9.0静态库的应用程序.</p>
+<a id="more"></a>
+
+<h1 id="准备Qt5-9-0静态库"><a href="#准备Qt5-9-0静态库" class="headerlink" title="准备Qt5.9.0静态库"></a>准备Qt5.9.0静态库</h1><p>请参考文章 <a href="http://engtang.net/2017/BuildingQtSources/" target="_blank" rel="noopener">VisualStudio编译 Qt5.9.0静态库</a></p>
+<h1 id="使用VS2015与Qt5-9-0静态库构建应用"><a href="#使用VS2015与Qt5-9-0静态库构建应用" class="headerlink" title="使用VS2015与Qt5.9.0静态库构建应用"></a>使用VS2015与Qt5.9.0静态库构建应用</h1><h2 id="安装插件Qt5Package或Qt-Visual-Studio-Tools"><a href="#安装插件Qt5Package或Qt-Visual-Studio-Tools" class="headerlink" title="安装插件Qt5Package或Qt Visual Studio Tools"></a>安装插件Qt5Package或Qt Visual Studio Tools</h2><p> 首先确认VS2015安装有插件 <strong>Qt5Package</strong> 或者Qt官方的插件<a href="http://doc.qt.io/qtvstools/index.html" target="_blank" rel="noopener">Qt Visual Studio Tools</a><br>没有的话到 “扩展和更新” 中寻找这两个插件.</p>
+<h2 id="配置项目"><a href="#配置项目" class="headerlink" title="配置项目"></a>配置项目</h2><p>使用插件提供的模板,为了使用静态库,需要增加以下配置:</p>
+<ol>
+<li><p>在项目中找到main函数所在文件,在文件开头插入下面的代码,用于导入平台扩展库的头文件</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QtPlugin&gt;</span></span></span><br><span class="line">Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 “链接器” -&gt; “常规” -&gt; “附加库目录” 中,添加 “$(QTDIR)\plugins\platforms” 这个目录.这个目录中是平台扩展库.</p>
+</li>
+<li><p>在 “链接器” -&gt; “输入” -&gt; “附加依赖项” 中填写以下这些项.<br> <strong>debug版本</strong></p>
+<blockquote>
+<p>qtmaind.lib<br>Qt5Cored.lib<br>Qt5Guid.lib<br>Qt5Widgetsd.lib</p>
+<p>Qt5PlatformCompositorSupportd.lib<br>Qt5FontDatabaseSupportd.lib<br>Qt5ThemeSupportd.lib<br>Qt5AccessibilitySupportd.lib<br>Qt5EventDispatcherSupportd.lib<br>qtlibpngd.lib<br>qtpcre2d.lib<br>qtfreetyped.lib<br>qtharfbuzzd.lib</p>
+<p>qminimald.lib<br>qoffscreend.lib<br>qwindowsd.lib<br>qdirect2dd.lib</p>
+<p>imm32.lib<br>winmm.lib<br>Dwmapi.lib<br>UxTheme.lib<br>Mincore.lib<br>version.lib<br>ws2_32.lib</p>
+</blockquote>
+<p> <strong>release版本</strong></p>
+<blockquote>
+<p>qtmain.lib<br>Qt5Core.lib<br>Qt5Gui.lib<br>Qt5Widgets.lib</p>
+<p>Qt5PlatformCompositorSupport.lib<br>Qt5FontDatabaseSupport.lib<br>Qt5ThemeSupport.lib<br>Qt5AccessibilitySupport.lib<br>Qt5EventDispatcherSupport.lib<br>qtlibpng.lib<br>qtpcre2.lib<br>qtfreetype.lib<br>qtharfbuzz.lib</p>
+<p>qwindows.lib<br>qoffscreen.lib<br>qdirect2d.lib<br>qminimal.lib</p>
+<p>imm32.lib<br>winmm.lib<br>Dwmapi.lib<br>UxTheme.lib<br>Mincore.lib<br>version.lib<br>ws2_32.lib</p>
+</blockquote>
+</li>
+<li><p>根据使用的Qt5.9.0静态库的编译选项 MT 或 MD,在 “代码生成” -&gt; “运行库” 中选择 MT 或 MD.</p>
+</li>
+<li><p>设置完毕,编译通过就行了.</p>
+</li>
+</ol>
+<h1 id="使用CMake与Qt5-9-0静态库构建Qt应用"><a href="#使用CMake与Qt5-9-0静态库构建Qt应用" class="headerlink" title="使用CMake与Qt5.9.0静态库构建Qt应用"></a>使用CMake与Qt5.9.0静态库构建Qt应用</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Qt5对CMake的支持相当好(或者反过来说CMake对Qt5的支持也很好),经过简单配置,CMake就可以做为Qt5的构建工具.<br>之前以为使用cmake构建qt应用会非常麻烦,需要自己调用moc和指定UI文件的编译过程.其实Qt5的库中已经提供方便使用cmake的模块与宏命令.<br>例如:</p>
+<ul>
+<li>cmake 的CMAKE_AUTOMOC 变量,直接可以开启cmake在需要时自动运行moc功能.</li>
+<li>Qt5提供的cmake模块中, qt5_wrap_ui 宏可以直接从UI文件创建代码.</li>
+<li>使用cmake的 target_link_libraries 命令,可以用这语法直接包含Qt的库文件  <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">target_link_libraries</span>(</span><br><span class="line">    qt590static_test </span><br><span class="line">    Qt5::Widgets</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>详情请参考Qt官方文档 <a href="http://doc.qt.io/qt-5/cmake-manual.html" target="_blank" rel="noopener">Qt 5.9 CMake Manual</a><br>与CMake官方文档<a href="https://cmake.org/cmake/help/v3.9/manual/cmake-qt.7.html" target="_blank" rel="noopener">cmake-qt</a></p>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><h3 id="创建文件"><a href="#创建文件" class="headerlink" title="创建文件"></a>创建文件</h3><ol>
+<li><p>在项目目录中创建文件qt590static_test.h.</p>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> QT590STATIC_TEST_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> QT590STATIC_TEST_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QtWidgets/QMainWindow&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"ui_qt590static_test.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">qt590static_test</span> :</span> <span class="keyword">public</span> QMainWindow</span><br><span class="line">&#123;</span><br><span class="line">    Q_OBJECT</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    qt590static_test(QWidget *parent = <span class="number">0</span>);</span><br><span class="line">    ~qt590static_test();</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    Ui::qt590static_testClass ui;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建文件qt590static_test.cpp</p>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"qt590static_test.h"</span></span></span><br><span class="line"></span><br><span class="line">qt590static_test::qt590static_test(QWidget *parent)</span><br><span class="line">    : QMainWindow(parent)</span><br><span class="line">&#123;</span><br><span class="line">    ui.setupUi(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">qt590static_test::~qt590static_test()</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>使用Qt Designer 创建文件qt590static_test.ui.<br> 也可以直接创建qt590static_test.ui文件</p>
+ <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">UI</span> <span class="attr">version</span>=<span class="string">"4.0"</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">class</span>&gt;</span>qt590static_testClass<span class="tag">&lt;/<span class="name">class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">widget</span> <span class="attr">class</span>=<span class="string">"QMainWindow"</span> <span class="attr">name</span>=<span class="string">"qt590static_testClass"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"objectName"</span> &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">string</span> <span class="attr">notr</span>=<span class="string">"true"</span>&gt;</span>qt590static_testClass<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"geometry"</span> &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">rect</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">x</span>&gt;</span>0<span class="tag">&lt;/<span class="name">x</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">y</span>&gt;</span>0<span class="tag">&lt;/<span class="name">y</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">width</span>&gt;</span>600<span class="tag">&lt;/<span class="name">width</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">height</span>&gt;</span>400<span class="tag">&lt;/<span class="name">height</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"windowTitle"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">string</span>&gt;</span>qt590static_test<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">widget</span> <span class="attr">class</span>=<span class="string">"QMenuBar"</span> <span class="attr">name</span>=<span class="string">"menuBar"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">widget</span> <span class="attr">class</span>=<span class="string">"QToolBar"</span> <span class="attr">name</span>=<span class="string">"mainToolBar"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">widget</span> <span class="attr">class</span>=<span class="string">"QWidget"</span> <span class="attr">name</span>=<span class="string">"centralWidget"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">widget</span> <span class="attr">class</span>=<span class="string">"QStatusBar"</span> <span class="attr">name</span>=<span class="string">"statusBar"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">widget</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">layoutDefault</span> <span class="attr">spacing</span>=<span class="string">"6"</span> <span class="attr">margin</span>=<span class="string">"11"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pixmapfunction</span>&gt;</span><span class="tag">&lt;/<span class="name">pixmapfunction</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">include</span> <span class="attr">location</span>=<span class="string">"qt590static_test.qrc"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">connections</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">UI</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建文件main.cpp</p>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QtPlugin&gt;</span></span></span><br><span class="line">Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"qt590static_test.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QtWidgets/QApplication&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">QApplication <span class="title">a</span><span class="params">(argc, argv)</span></span>;</span><br><span class="line">    qt590static_test w;</span><br><span class="line">    w.show();</span><br><span class="line">    <span class="keyword">return</span> a.exec();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>创建CMake项目文件CMakeLists.txt</p>
+ <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.0</span>.<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#设定Qt静态库的目录位置</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_PREFIX_PATH D:/Qt/Qt5.<span class="number">9.0</span>_x64_static_msvc2015)</span><br><span class="line"><span class="comment">#需要开启c++11标准</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"><span class="comment"># 自动将当前源代码和构建目录添加到包含路径</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_INCLUDE_CURRENT_DIR <span class="keyword">ON</span>)</span><br><span class="line"><span class="comment"># 指示CMake在需要时自动运行moc</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_AUTOMOC <span class="keyword">ON</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找QtWidgets包</span></span><br><span class="line"><span class="keyword">find_package</span>(Qt5Widgets)</span><br><span class="line"></span><br><span class="line"><span class="keyword">project</span>(qt590static_test)</span><br><span class="line"></span><br><span class="line"><span class="comment">#由于是使用静态库,所以需要指定部分链接库</span></span><br><span class="line"><span class="keyword">set</span>(QLIBDIR <span class="string">"D:/Qt/Qt5.9.0_x64_static_msvc2015/lib/"</span>)</span><br><span class="line"><span class="keyword">set</span>(QPLADIR <span class="string">"D:/Qt/Qt5.9.0_x64_static_msvc2015/plugins/platforms/"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(CMAKE_BUILD_TYPE <span class="keyword">STREQUAL</span> Debug)</span><br><span class="line">    <span class="comment">#Debug 版本需要链接的库</span></span><br><span class="line">    <span class="keyword">set</span>(QLIBS </span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5PlatformCompositorSupportd.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5FontDatabaseSupportd.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5ThemeSupportd.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5AccessibilitySupportd.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5EventDispatcherSupportd.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtlibpngd.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtfreetyped.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtpcre2d.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtharfbuzzd.lib</span><br><span class="line"></span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qminimald.lib</span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qoffscreend.lib</span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qwindowsd.lib</span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qdirect2dd.lib</span><br><span class="line">    )</span><br><span class="line"><span class="keyword">elseif</span>(CMAKE_BUILD_TYPE <span class="keyword">STREQUAL</span> Release)</span><br><span class="line">    <span class="comment">#Release 版本需要链接的库</span></span><br><span class="line">    <span class="keyword">set</span>(QLIBS </span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5PlatformCompositorSupport.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5FontDatabaseSupport.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5ThemeSupport.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5AccessibilitySupport.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>Qt5EventDispatcherSupport.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtlibpng.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtfreetype.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtpcre2.lib</span><br><span class="line">        <span class="variable">$&#123;QLIBDIR&#125;</span>qtharfbuzz.lib</span><br><span class="line"></span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qminimal.lib</span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qoffscreen.lib</span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qwindows.lib</span><br><span class="line">        <span class="variable">$&#123;QPLADIR&#125;</span>qdirect2d.lib</span><br><span class="line">    )</span><br><span class="line"><span class="keyword">else</span>(CMAKE_BUILD_TYPE <span class="keyword">STREQUAL</span> Debug)</span><br><span class="line">    <span class="keyword">message</span>(FATAL_ERROR <span class="string">"please set CMAKE_BUILD_TYPE = Debug | Release"</span>)</span><br><span class="line"><span class="keyword">endif</span>(CMAKE_BUILD_TYPE <span class="keyword">STREQUAL</span> Debug)</span><br><span class="line"></span><br><span class="line"><span class="comment">#从ui文件创建cpp代码,需要编译的UI文件都必须使用这条宏引入项目中</span></span><br><span class="line">qt5_wrap_ui(ui_qt590static_test.h qt590static_test.ui)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(</span><br><span class="line">    qt590static_test </span><br><span class="line">    WIN32 </span><br><span class="line">    main.cpp </span><br><span class="line">    qt590static_test.cpp </span><br><span class="line">    qt590static_test.ui</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span>(</span><br><span class="line">    qt590static_test </span><br><span class="line"></span><br><span class="line">    Qt5::Widgets</span><br><span class="line"></span><br><span class="line">    <span class="variable">$&#123;QLIBS&#125;</span></span><br><span class="line"></span><br><span class="line">    imm32.lib</span><br><span class="line">    winmm.lib</span><br><span class="line">    Dwmapi.lib</span><br><span class="line">    UxTheme.lib</span><br><span class="line">    Mincore.lib</span><br><span class="line">    version.lib</span><br><span class="line">    ws2_32.lib</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="编译项目"><a href="#编译项目" class="headerlink" title="编译项目"></a>编译项目</h3></li>
+<li><p>使用 <strong>VS2015 x64 本机工具命令提示符</strong> 进入项目目录.<br> 最好创建构建目录build_x64_Debug 与build_x64_Release,好分开构建Debug与Release版本.</p>
+</li>
+<li><p>进入构建目录,例如进入build_x64_Debug 后,执行命令:</p>
+ <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug</span><br></pre></td></tr></table></figure>
+<p> 当然,也可以使用VS IDE,那么就使用命令:</p>
+ <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake .. -G "Visual Studio <span class="number">14</span> <span class="number">2015</span> Win64" -DCMAKE_BUILD_TYPE=Debug</span><br></pre></td></tr></table></figure></li>
+<li><p>编译项目,使用命令:</p>
+ <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmake</span><br></pre></td></tr></table></figure>
+<p> 或者使用VS IDE打开项目并编译.</p>
+</li>
+<li><p>OK,构建成功</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Qt/" rel="tag"># Qt</a>
+              <a href="/tags/GUI/" rel="tag"># GUI</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/06/09/BuildingQtSources/" rel="prev" title="VisualStudio编译 Qt5.9.0静态库">
+      <i class="fa fa-chevron-left"></i> VisualStudio编译 Qt5.9.0静态库
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/11/02/macOS%E4%B8%8B%E4%BD%BF%E7%94%A8CLion%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95Linux%E4%B8%8A%E7%9A%84QtGUI%E7%A8%8B%E5%BA%8F/" rel="next" title="macOS下使用CLion远程开发调试Linux上的QtGUI程序">
+      macOS下使用CLion远程开发调试Linux上的QtGUI程序 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备Qt5-9-0静态库"><span class="nav-number">1.</span> <span class="nav-text">准备Qt5.9.0静态库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用VS2015与Qt5-9-0静态库构建应用"><span class="nav-number">2.</span> <span class="nav-text">使用VS2015与Qt5.9.0静态库构建应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装插件Qt5Package或Qt-Visual-Studio-Tools"><span class="nav-number">2.1.</span> <span class="nav-text">安装插件Qt5Package或Qt Visual Studio Tools</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置项目"><span class="nav-number">2.2.</span> <span class="nav-text">配置项目</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用CMake与Qt5-9-0静态库构建Qt应用"><span class="nav-number">3.</span> <span class="nav-text">使用CMake与Qt5.9.0静态库构建Qt应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例"><span class="nav-number">3.2.</span> <span class="nav-text">实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建文件"><span class="nav-number">3.2.1.</span> <span class="nav-text">创建文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译项目"><span class="nav-number">3.2.2.</span> <span class="nav-text">编译项目</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="sanri"
+      src="/images/tang.jpeg">
+  <p class="site-author-name" itemprop="name">sanri</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanri</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
