@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+<title>VisualStudio编译Qt5.9.0静态库 | 三日</title>
+
+
+
+<meta property="og:title" content="VisualStudio编译Qt5.9.0静态库">
+
+
+
+<meta name="author" content="sanri">
+
+
+<meta property="og:locale" content="zh_CH">
+
+
+<meta name="description" content="三日的笔记">
+<meta property="og:description" content="三日的笔记">
+
+
+
+<link rel="canonical" href="https://engtang.net/VisualStudio编译Qt5.9.0静态库/">
+<meta property="og:url" content="https://engtang.net/VisualStudio编译Qt5.9.0静态库/">
+
+
+
+<meta property="og:site_name" content="三日" />
+
+
+
+  <meta property="og:image" content="https://engtang.net/tale.png">
+  
+  
+
+
+
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content="2017-06-09T21:13:47+08:00">
+
+
+
+  <link rel="prev" href="https://engtang.net/网站测试/">
+
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image"">
+  <meta property="twitter:image" content="https://engtang.net/tale.png">
+
+
+
+  <meta property="twitter:title" content="VisualStudio编译Qt5.9.0静态库">
+
+
+
+
+
+  
+
+  
+
+  
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+<script type="application/ld+json">
+{
+  "author": {
+    "@type":"Person",
+	  "name":"sanri",
+  },
+  "description": "三日的笔记",
+  "url": "https://engtang.net/VisualStudio编译Qt5.9.0静态库/",
+  "@context":"https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "VisualStudio编译Qt5.9.0静态库"
+  
+    
+      "dateModified":"2017-06-10T00:44:00+08:00",
+    
+    
+      "datePublished":"2017-06-09T21:13:47+08:00",
+    
+    "mainEntityOfPage":{
+      "@type":"WebPage",
+      "@id":"https://engtang.net/VisualStudio编译Qt5.9.0静态库/"
+    },
+  
+}
+</script>
+
+  <link rel="stylesheet" href="https://engtang.net/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="https://engtang.net/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://engtang.net/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://engtang.net/assets/apple-touch-icon.png">
+
+  
+    <link type="application/atom+xml" rel="alternate" href="https://engtang.net/rss.xml" title="三日" />
+  
+
+  
+
+  
+  
+</head>
+
+<body>
+  
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="https://engtang.net">
+        <h2 class="nav-title">三日</h2>
+      </a>
+      <ul>
+        
+          
+            <li><a href="https://engtang.net">Posts</a></li>
+          
+            <li><a href="https://engtang.net/tags">Tags</a></li>
+          
+            <li><a href="https://engtang.net/about">About</a></li>
+          
+        
+      </ul>
+    </div>
+  </nav>
+  
+
+  <main>
+    
+  <div class="post">
+  	<div class="post-info">
+  		<span>Written by</span> sanri<br>
+  		<span>On&nbsp;</span><time datetime="2017-06-09T21:13:47+08:00">2017-06-09</time>
+  	</div>
+  	<h1 class="post-title">VisualStudio编译Qt5.9.0静态库</h1>
+  	<div class="post-line"></div>
+  	<p>使用 VS2017或VS2015编译 Qt5.9.0的静态库</p>
+<span id="continue-reading"></span><h1 id="环境要求"><a class="zola-anchor" href="#环境要求"  aria-label="Anchor link for: 环境要求">⋅ </a>环境要求</h1>
+<p>大概内容就是需要软件 Perl 与 Python 支持, ANGLE 库非必要等等
+详细内容请参考 Qt的官方文档 <a href="http://doc.qt.io/qt-5/windows-requirements.html">Qt for Windows - Requirements</a></p>
+<h1 id="构建步骤"><a class="zola-anchor" href="#构建步骤"  aria-label="Anchor link for: 构建步骤">⋅ </a>构建步骤</h1>
+<h2 id="1._解压源代码压缩包"><a class="zola-anchor" href="#1._解压源代码压缩包"  aria-label="Anchor link for: 1._解压源代码压缩包">⋅ </a>1. 解压源代码压缩包</h2>
+<p>解压 qt-everywhere-opensource-src-5.9.0.zip 到构建目录,我这里是解压了两份源代码,方便编译x64与x86两种静态库.<br />
+<br></p>
+<h2 id="2._使用VS命令行"><a class="zola-anchor" href="#2._使用VS命令行"  aria-label="Anchor link for: 2._使用VS命令行">⋅ </a>2. 使用VS命令行</h2>
+<p>使用VS的命令行脚本 &quot;x64 Native Tools Command Prompt for VS 2017&quot; (VS2015中文版是 &quot;VS2015 x64 本机工具命令提示符&quot; )进入Qt源码目录.<br />
+如果编译x86的静态库,就用 &quot;x64_x86 Cross Tools Command Prompt for VS2017&quot; (VS2015中文版是 &quot;VS2015 x64 x86兼容工具命令提示符&quot; ).</p>
+<h2 id="3._配置Qt库"><a class="zola-anchor" href="#3._配置Qt库"  aria-label="Anchor link for: 3._配置Qt库">⋅ </a>3. 配置Qt库</h2>
+<p>运行命令 </p>
+<pre data-lang="cmd" style="background-color:#eff1f5;color:#4f5b66;" class="language-cmd "><code class="language-cmd" data-lang="cmd"><span>configure -prefix d:\libs\Qt\Qt5.</span><span style="color:#d08770;">9</span><span>.0_x64_static_msvc2017 -opensource -</span><span style="color:#b48ead;">debug</span><span>-and-release -static -opengl dynamic -nomake examples -sql-sqlite -mp
+</span></code></pre>
+<ul>
+<li><strong>-prefix</strong> 选项是设定编译完成后,库的安装目录. 编译完成后的静态库,需要运行安装命令进行安装后,使用才比较方便.</li>
+<li><strong>-opensource</strong> 选项是说明编译开源版本</li>
+<li><strong>-debug-and-release</strong> 选项说明同时编译debug与release版本, 我使用这个选项编译完成后,源码目录下占用了17G多的硬盘空间,心疼硬盘的就少编译点东西吧.</li>
+<li><strong>-static</strong> 编译静态库,使用这个选项, Qt编译时的参数是 -MD与-MDd. 要改为 -MT 与 -MTd 就需要修改Qt的配置文件了.</li>
+<li><strong>-opengl dynamic</strong> 设定Qt应用启动时, 动态加载opengl的驱动库,详情请参考 <a href="http://doc.qt.io/qt-5/windows-requirements.html">Qt for Windows - Requirements</a></li>
+<li><strong>-nomake examples</strong> 不编译示例</li>
+<li><strong>-sql-sqlite</strong> 使用Qt内置的sqlite3插件</li>
+<li><strong>-mp</strong> 这个选项非常的好(此处鼓掌),使用VS的多处理器编译功能,就是多线程编译啦.保证能榨干你的CPU.</li>
+</ul>
+<h2 id="编译"><a class="zola-anchor" href="#编译"  aria-label="Anchor link for: 编译">⋅ </a>编译</h2>
+<p>上面的命令运行完且没有出错后,那就敲下神圣的字符 </p>
+<pre data-lang="cmd" style="background-color:#eff1f5;color:#4f5b66;" class="language-cmd "><code class="language-cmd" data-lang="cmd"><span>nmake
+</span></code></pre>
+<p>然后你可以喝杯咖啡,吃点零食, 喝杯红茶,出去溜达溜达,我是等了2个多小时才编译完.</p>
+<h2 id="安装"><a class="zola-anchor" href="#安装"  aria-label="Anchor link for: 安装">⋅ </a>安装</h2>
+<p>使用命令 </p>
+<pre data-lang="cmd" style="background-color:#eff1f5;color:#4f5b66;" class="language-cmd "><code class="language-cmd" data-lang="cmd"><span>nmake install
+</span></code></pre>
+<p>安装编译好的库.我安装好的库大概有3G左右.</p>
+<h2 id="结束"><a class="zola-anchor" href="#结束"  aria-label="Anchor link for: 结束">⋅ </a>结束</h2>
+<p>安装完成后, 你就可以开始撸代码, 你的老板也可以催你命啦 ^_^</p>
+
+  </div>
+
+	
+
+  <div class="pagination">
+  	<a href="https://engtang.net/Windows中使用Qt5.9.0静态库构建应用/" class="left arrow">&#8592;</a>
+		<a href="#" class="top">Top</a>
+		<a href="https://engtang.net/网站测试/" class="right arrow">&#8594;</a>
+  </div>
+
+  </main>
+
+  
+  <footer>
+    <span>&copy; <time datetime="2021-09-08T22:47:23.882399+08:00">2017-2021</time> sanri. Made with <a href="https://www.getzola.org">Zola</a> with <a href="https://github.com/aaranxu/tale-zola">Tala-Zola</a> theme.</span>
+  </footer>
+  
+</body>
+</html>

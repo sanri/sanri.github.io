@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>三日 - Math</title>
+        <link>https://engtang.net</link>
+        <description>三日的笔记</description>
+        <generator>Zola</generator>
+        <language>en</language>
+        <atom:link href="https://engtang.net/tags/Math/rss.xml" rel="self" type="application/rss+xml"/>
+        <lastBuildDate>Wed, 08 Sep 2021 16:20:00 +0800</lastBuildDate>
+        <item>
+            <title>网站测试</title>
+            <pubDate>Thu, 08 Jun 2017 00:45:32 +0800</pubDate>
+            <link>https://engtang.net/网站测试/</link>
+            <guid>https://engtang.net/网站测试/</guid>
+            <description>&lt;p&gt;网站各项功能测试,标题测试,代码块&lt;&#x2F;p&gt;
+</description>
+        </item>
+    </channel>
+</rss>
